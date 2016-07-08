@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style type="text/css">
+#clock{width:300px;height:300px;border:1px solid #ccc;border-radius:15px 15px;margin:0px auto;position:relative;}
+</style>
+
+<script>
+function init(){
+	var radius = 140;//定义长度半径为140.
+	//计算横向的偏移与纵向的偏移。
+	//Math.cos ，需要处理角度与弧度的对换：N代表刻度，N*30代表角度 N*30*2*Math.PI/360 
+	//获取得到代表表盘的对象。
+	
+	var clock = document.getElementById("clock");
+	clock.innerHTML = "";
+	//alert(clock);
+	for(var i = 1; i <= 12; i++){//为表盘上的每一个刻度赋值
+		var dx = Math.cos(i*Math.PI/6 - Math.PI/2)*radius;
+		var dy = Math.sin(i*Math.PI/6 - Math.PI/2)*radius;
+		/*
+		一个刻度相对于页面的容器来说，其位置定位需要使用absolute.
+		
+		*/
+		
+		var element = document.createElement("div");//创建一个小型的div，每一个div用来封装一个刻度值。
+		
+		element.style.width = 5 + 'px';
+		element.style.height = 5 + 'px';
+		
+		element.style.position = 'absolute';
+		element.innerHTML = i;
+		var x = radius + dx + 'px';
+		var y = radius + dy + 'px';
+		element.style.top = y;
+		element.style.left = x;
+		/*
+		纠正元素的弧度
+		*/
+		//将每一个刻度添加到页面上的表盘当中。
+		clock.appendChild(element);
+		/*
+		添加移动的指针，此时需要确定：秒针，每移动一次，它的有效移动空间为：
+		每移动一秒，角度增加6度。
+		
+		*/
+		
+	}
+	var d = new Date();
+	var s = d.getSeconds();//取得当前的时间，秒。
+	/*秒针的规律 ：所有的点都在一条线上。
+	秒针的长度：它应该小于半径。为其做一个指定
+	在秒针的线路上，分别绘制不同的点，以达到连接成线的目的。也就是说，秒针线上的每一个点，都可以通过手工定制一个div来实现。
+	这个div比较特殊，它的长度为1px，宽度为1px.
+	*/
+	var radius2 = 130;
+	for(var i = 1;i<= radius2; i++){
+		var element = document.createElement("div");//element代表每一次绘制的点。
+		element.style.width = '1px';
+		element.style.height = '1px';
+		//需要确定当前的点所在的位置，即其横向的偏移量与纵向的偏移量。
+		//在一个特定的时间点上，秒针的弧度是固定的。
+		var dx = Math.cos(s*6*Math.PI*2/360)*i;
+		var dy = Math.sin(s*6*Math.PI*2/360)*i;
+		//radius2的作用，就是对绘制秒针起到辅助的作用。
+		var x = radius + dx + 'px';
+		var y = radius + dy + 'px';
+		element.style.left = x;
+		element.style.top = y;
+		element.style.position = 'absolute';
+		element.style.background = '#000';
+		clock.appendChild(element);
+	}
+	
+	//实现让秒针的移动。
+	/*
+	javascript当中提供了一个计时器，可以通过为一个计时器来指定一个特定方法与时效的方式，来达到到达特定的一个时间点，触发某具体的函数执行的作用。
+	此时的页面，不断地在容器内部添加内容。也就是说，即使是不变化的时刻，它也是循环地进行绘制的。
+	
+	*/
+	setTimeout('init()',1000);
+}
+window.onload = init;
+</script>
+
+</head>
+
+<body>
+
+<div id="clock">
+	
+</div>
+
+</body>
+</html>
